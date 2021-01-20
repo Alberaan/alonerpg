@@ -1,1 +1,22 @@
-{{ salutation }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Alone RPG</title>
+</head>
+<body>
+<h1>Alone RPG:</h1><br>
+<form action="/">
+  <label for="searchfield">Search Table:</label>
+  <input type="text" id="searchfield" name="searchfield" value="">
+  <input type="submit" value="Filter">
+</form> 
+<p><h2>{{ message }}</h2></p>
+{% if result %}
+<p>{{ result }}</p>
+<button onClick="window.location.reload();">Roll Again</button>
+{% endif %}
+    {% for table in tables %}
+        <a href="?command=rtn {{ table.index }}"> <button>{{ table.index }}: ({{ table.system }}) {{ table.filename }}</button></a><br>
+    {% endfor %}
+
+</body>
