@@ -1,1 +1,10 @@
-{{ salutation }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Alone RPG</title>
+</head>
+<body>
+<p> {{ message }} </p>
+    {% for line in data %}
+        <p> {{ line }} </p>
+    {% endfor %}
