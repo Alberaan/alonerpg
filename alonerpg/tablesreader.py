@@ -58,7 +58,7 @@ def lt(tables, filterstring=""):
         if filterstring.lower() in table.system.lower() or filterstring.lower() in table.filename.lower():
             tables_to_return.append(table)
 
-    return Response(message="", data=tables_to_return)
+    return Response(message="Tablas encontradas:", data=tables_to_return)
 
 #rtn número: obtén un elemento aleatorio de la tabla con el número especificado. Este número puede consultarse cuando se listan o buscan tablas. Ejemplo "rtn 1" hará una tirada en la tabla 1
 def rtn(tables, table_number):

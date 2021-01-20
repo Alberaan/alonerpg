@@ -4,25 +4,23 @@ from django.views.generic.base import TemplateView
 class HomePageView(TemplateView):
 
     template_name = "home.html"
+    tables = get_tables()
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        #context['parametros'] = request.GET["ls"]
-        command = request.GET["command"]
-        tables = get_tables()
-        result = dynamic_call(tables, command)
+        if "command" in request.GET:
+            command = request.GET["command"]
+        if "searchfield" in request.GET:
+            command = "lt " + request.GET["searchfield"]
+
+        result = dynamic_call(self.tables, command)
         context["message"] = result.message
-        context["data"] = get_text(result.data)
+        context["result"] = ""
+        context["tables"] = ""
+
+        if isinstance(result.data, str):
+            context["result"] = result.data
+        if isinstance(result.data, list):
+            context["tables"] = result.data
 
         return self.render_to_response(context)
-
-def get_text(data):
-    text = []
-    if isinstance(data, str):
-        text.append(data)
-    if isinstance(data, list):
-        for table in data:
-            if isinstance(table, Table):
-                text.append(str(table.index) + ": (" + table.system + ") " + table.filename)
-    return text
-    
