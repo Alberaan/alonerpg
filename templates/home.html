@@ -2,21 +2,46 @@
 <html lang="en">
 <head>
     <title>Alone RPG</title>
+    <style type="text/css">
+        body {
+            padding-left: 20em;
+        }
+            ul.navbar {
+                position: absolute;
+                top: 2em;
+                left: 1em;
+                width: 15em;
+            }
+  </style>
 </head>
 <body>
 <h1>Alone RPG:</h1><br>
-<form action="/">
+
+<ul class="navbar">
+<form id="filter" action="/">
   <label for="searchfield">Search Table:</label>
-  <input type="text" id="searchfield" name="searchfield" value="">
+  <input type="text" id="searchfield" name="searchfield" value="{{ current_filter }}">
   <input type="submit" value="Filter">
+  <input type="button" onclick="myFunction()" value="Reset">
 </form> 
-<p><h2>{{ message }}</h2></p>
-{% if result %}
-<p>{{ result }}</p>
+
+<p><h2>{{ filter_message }}</h2></p>
+    {% for table in tables %}
+        <a href="?command=rtn {{ table.index }}&searchfield={{ current_filter }}"> <button>{{ table.index }}: ({{ table.system }}) {{ table.filename }}</button></a><br>
+    {% endfor %}
+</ul>
+
+{% if roll_data %}
+<p>{{ roll_message }}</p>
+<p>{{ roll_data }}</p>
 <button onClick="window.location.reload();">Roll Again</button>
 {% endif %}
-    {% for table in tables %}
-        <a href="?command=rtn {{ table.index }}"> <button>{{ table.index }}: ({{ table.system }}) {{ table.filename }}</button></a><br>
-    {% endfor %}
+
+<script>
+function myFunction() {
+    document.getElementById("searchfield").value = "";
+    document.getElementById("filter").submit();
+}
+</script>
 
 </body>

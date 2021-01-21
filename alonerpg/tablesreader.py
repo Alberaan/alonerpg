@@ -23,7 +23,7 @@ class Table:
 def rt(chosen_table):
 
     table_name = chosen_table.filename.replace(".txt", "")
-    valid_string = re.search(r"^[a-zA-Z_\s]*$", table_name)
+    valid_string = re.search(r"^[a-zA-Z_\sñ]*$", table_name)
 
     if not valid_string:
         return Response(message="Invalid string", data=None)
