@@ -3,42 +3,42 @@
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" />
     <title>Alone RPG</title>
-    <style type="text/css">
-        body {
-            padding-left: 20em;
-        }
-            ul.navbar {
-                position: absolute;
-                top: 2em;
-                left: 1em;
-                width: 15em;
-            }
-  </style>
 </head>
 <body>
-<h1>Alone RPG:</h1><br>
+<ul>
+<h1 class="ui header">Alone RPG:</h1>
 
-<ul class="navbar">
-<form id="filter" action="/">
-  <label for="searchfield">Search Table:</label>
-  <div class="ui input">
-  <input type="text" placeholder="Filter" id="searchfield" name="searchfield" value="{{ current_filter }}">
+<div class="ui segment">
+    <div class="ui two column very relaxed grid">
+        <div class="column">
+            <form class="ui form" id="filter" action="/">
+                <div class="field">
+                    <label>Search Table:</label>
+                    <input type="text" placeholder="Filter" id="searchfield" name="searchfield" value="{{ current_filter }}">
+                </div>
+                <input type="submit" class="ui button" value="Filter">
+                <input type="button" class="ui button" onclick="myFunction()" value="Reset">
+            </form> 
+        </div>
+            {% if roll_data %}
+        <div class="column">
+            <h3>{{ roll_message }}</h3>
+            <p>{{ roll_data }}</p>
+            <button class="ui button" onClick="window.location.reload();">Roll Again</button>
+            {% endif %}
+        </div>
+    </div>
 </div>
-  <input type="submit" class="ui button" value="Filter">
-  <input type="button" class="ui button" onclick="myFunction()" value="Reset">
-</form> 
 
 <p><h2>{{ filter_message }}</h2></p>
+<div class="ui grid">
     {% for table in tables %}
-        <a href="?command=rtn {{ table.index }}&searchfield={{ current_filter }}"> <button class="ui button">{{ table.index }}: ({{ table.system }}) {{ table.filename }}</button></a><br>
+        <div class="four wide column"><a class="fluid small ui button" href="?command=rtn {{ table.index }}&searchfield={{ current_filter }}"> {{ table.index }}: ({{ table.system }}) {{ table.filename }}</a></div>
     {% endfor %}
-</ul>
+</div>
 
-{% if roll_data %}
-<p>{{ roll_message }}</p>
-<p>{{ roll_data }}</p>
-<button class="ui button" onClick="window.location.reload();">Roll Again</button>
-{% endif %}
+</div>
+</ul>
 
 <script>
 function myFunction() {
