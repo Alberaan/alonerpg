@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" />
     <title>Alone RPG</title>
     <style type="text/css">
         body {
@@ -20,21 +21,23 @@
 <ul class="navbar">
 <form id="filter" action="/">
   <label for="searchfield">Search Table:</label>
-  <input type="text" id="searchfield" name="searchfield" value="{{ current_filter }}">
-  <input type="submit" value="Filter">
-  <input type="button" onclick="myFunction()" value="Reset">
+  <div class="ui input">
+  <input type="text" placeholder="Filter" id="searchfield" name="searchfield" value="{{ current_filter }}">
+</div>
+  <input type="submit" class="ui button" value="Filter">
+  <input type="button" class="ui button" onclick="myFunction()" value="Reset">
 </form> 
 
 <p><h2>{{ filter_message }}</h2></p>
     {% for table in tables %}
-        <a href="?command=rtn {{ table.index }}&searchfield={{ current_filter }}"> <button>{{ table.index }}: ({{ table.system }}) {{ table.filename }}</button></a><br>
+        <a href="?command=rtn {{ table.index }}&searchfield={{ current_filter }}"> <button class="ui button">{{ table.index }}: ({{ table.system }}) {{ table.filename }}</button></a><br>
     {% endfor %}
 </ul>
 
 {% if roll_data %}
 <p>{{ roll_message }}</p>
 <p>{{ roll_data }}</p>
-<button onClick="window.location.reload();">Roll Again</button>
+<button class="ui button" onClick="window.location.reload();">Roll Again</button>
 {% endif %}
 
 <script>
