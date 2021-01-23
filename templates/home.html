@@ -33,7 +33,11 @@
 <p><h2>{{ filter_message }}</h2></p>
 <div class="ui grid">
     {% for table in tables %}
-        <div class="four wide column"><a class="fluid small ui button" href="?command=rtn {{ table.index }}&searchfield={{ current_filter }}"> {{ table.index }}: ({{ table.system }}) {{ table.filename }}</a></div>
+        {% if rolled_table == table.index %}
+            <div class="four wide column"><a class="fluid primary small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}"> {{ table.index }}: ({{ table.system }}) {{ table.filename }}</a></div>
+        {% else %}
+            <div class="four wide column"><a class="fluid small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}"> {{ table.index }}: ({{ table.system }}) {{ table.filename }}</a></div>
+        {% endif %}
     {% endfor %}
 </div>
 

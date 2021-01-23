@@ -33,7 +33,7 @@ def rt(chosen_table):
     with open(table_path, encoding="utf-8", errors="ignore") as f:
         elements = [line.rstrip() for line in f]
 
-    return Response(message="Result:", data=random.choice(elements))
+    return Response(message="Result for '" + table_name + "':", data=random.choice(elements))
 
 def get_tables(path=tables_path):
     directories = os.listdir(path)
@@ -51,11 +51,18 @@ def get_tables(path=tables_path):
     return tables_to_return
 
 #lt [filtro]: lista todas las tablas. Si se especifica un filtro, solo se mostrarán aquellas tablas/sistemas cuyo nombre contenga el filtro especificado. Ejemplo: "lt" mostrará todas las tablas. "lt tarot" muestra todas las tablas o sistemas que contengan la palabra tarot
-def lt(tables, filterstring=""):
+def lt(tables, *argv):
     tables_to_return = []
+    
+    if len(argv) == 0:
+        return Response(message="Tablas disponibles:", data=tables)
 
     for table in tables:
-        if filterstring.lower() in table.system.lower() or filterstring.lower() in table.filename.lower():
+        flag = True
+        for filterstring in argv:
+            if filterstring.lower() not in table.system.lower() and filterstring.lower() not in table.filename.lower():
+                flag = False
+        if flag:
             tables_to_return.append(table)
 
     return Response(message="Tablas encontradas:", data=tables_to_return)
