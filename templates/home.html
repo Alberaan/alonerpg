@@ -77,8 +77,7 @@ function get_favourites(){
 function toggle_favourites(){
     if (document.getElementById("favourites_checkbox").checked == true){
         localStorage.only_favourites = true;
-    }
-    if (document.getElementById("favourites_checkbox").checked == false){
+    } else {
         localStorage.only_favourites = false;
     }
 }
@@ -122,7 +121,9 @@ function mark_favourites(){
 
     for (let favourite of favourites){
         var checkBox = document.getElementById("favourite " + favourite);
+        if (checkBox){
         checkBox.checked = true;
+        }
     }
 }
 </script>

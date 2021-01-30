@@ -24,13 +24,11 @@ class HomePageView(TemplateView):
             filtered_tables = dynamic_call(self.tables, command)
             if isinstance(filtered_tables.data, list):
                 if "favourites_checkbox" in request.GET:
-                    #if request.GET["favourites_checkbox"] != "":
-                        #filtered_tables.data = get_tables_by_list(filtered_tables.data, request.GET["favourites_checkbox"].split(","))
                     favourites_checkbox = request.GET["favourites_checkbox"] 
                     if favourites_checkbox == "":
                         filtered_tables.data = []
                     else:
-                        filtered_tables.data = get_tables_by_list(filtered_tables.data, request.GET["favourites_checkbox"].split(","))
+                        filtered_tables.data = get_tables_by_list(filtered_tables.data, favourites_checkbox.split(","))
                 context["tables"] = filtered_tables.data
                 context["filter_message"] = filtered_tables.message
                 context["current_filter"] = request.GET["searchfield"]
