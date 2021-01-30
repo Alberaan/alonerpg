@@ -53,17 +53,15 @@ function filter() {
 function add_favourite(favourite){
     var favourites = load_favourites();
 
-    favourites.add(favourite)
-    localStorage.favourites = Array.from(favourites).join(",")
+    favourites.add(favourite);
+    localStorage.favourites = Array.from(favourites).join(",");
 }
 
 function remove_favourite(favourite){
-    if (localStorage.getItem("favourites") == null){
-        return
-    }
-    var favourites = new Set(localStorage.favourites.split(","));
-    favourites.delete(favourite)
-    localStorage.favourites = Array.from(favourites).join(",")
+    var favourites = load_favourites();
+
+    favourites.delete(favourite);
+    localStorage.favourites = Array.from(favourites).join(",");
 }
 
 function manage_favourites(favourite){
@@ -79,13 +77,13 @@ function manage_favourites(favourite){
 function load_favourites(){
     if (!localStorage.favourites){
         return new Set();
-    } else {
-        return new Set(localStorage.favourites.split(","));
     }
+    return new Set(localStorage.favourites.split(","));
 }
 
 function mark_favourites(){
     var favourites = load_favourites();
+
     for (let favourite of favourites){
         var checkBox = document.getElementById("favourite " + favourite);
         checkBox.checked = true;
