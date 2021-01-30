@@ -23,17 +23,17 @@ class Table:
 def rt(chosen_table):
 
     table_name = chosen_table.filename.replace(".txt", "")
-    valid_string = re.search(r"^[a-zA-Z_\s]*$", table_name)
+    valid_string = re.search(r"^[a-zA-Z_\sñ0-9]*$", table_name)
 
     if not valid_string:
-        return Response(message="Invalid string", data=None)
+        return Response(message="Invalid string", data="")
 
     table_path= tables_path + "/" + chosen_table.system + "/" + table_name + ".txt"
 
     with open(table_path, encoding="utf-8", errors="ignore") as f:
         elements = [line.rstrip() for line in f]
 
-    return Response(message="Result:", data=random.choice(elements))
+    return Response(message="Resultados para '" + table_name + "':", data=random.choice(elements))
 
 def get_tables(path=tables_path):
     directories = os.listdir(path)
@@ -51,11 +51,18 @@ def get_tables(path=tables_path):
     return tables_to_return
 
 #lt [filtro]: lista todas las tablas. Si se especifica un filtro, solo se mostrarán aquellas tablas/sistemas cuyo nombre contenga el filtro especificado. Ejemplo: "lt" mostrará todas las tablas. "lt tarot" muestra todas las tablas o sistemas que contengan la palabra tarot
-def lt(tables, filterstring=""):
+def lt(tables, *argv):
     tables_to_return = []
+    
+    if len(argv) == 0:
+        return Response(message="Tablas disponibles:", data=tables)
 
     for table in tables:
-        if filterstring.lower() in table.system.lower() or filterstring.lower() in table.filename.lower():
+        flag = True
+        for filterstring in argv:
+            if filterstring.lower() not in table.system.lower() and filterstring.lower() not in table.filename.lower():
+                flag = False
+        if flag:
             tables_to_return.append(table)
 
     return Response(message="Tablas encontradas:", data=tables_to_return)
@@ -143,24 +150,20 @@ def allowed_function(my_function):
 def dynamic_call(tables, call):
     this_module = sys.modules[__name__]
     module_functions = inspect.getmembers(this_module, inspect.isfunction)
-    function = call.split(" ")[0]
+    function = call.split(" ")[0].lower()
     parameters = call.split(" ")[1:]
     parameters.insert(0, tables)
 
-    if function in [x[0] for x in module_functions]:
-        try:
-            to_be_executed = getattr(this_module, function)
-
-            if not allowed_function(to_be_executed):
-                raise TypeError
-
-            return to_be_executed(*parameters)
-
-        except TypeError:
-            response = ayuda()
-            response.message = "Orden incorrecta. Por favor, consulta la ayuda:"
-            return response
-    else:
+    if function not in [x[0] for x in module_functions]:
         response = ayuda()
         response.message = "Orden no encontrada. Por favor, consulta la ayuda:"
         return response
+    
+    to_be_executed = getattr(this_module, function)
+
+    if not allowed_function(to_be_executed):
+        response = ayuda()
+        response.message = "Orden incorrecta. Por favor, consulta la ayuda:"
+        return response
+
+    return to_be_executed(*parameters)
