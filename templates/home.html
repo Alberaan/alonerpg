@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" />
     <title>Alone RPG</title>
 </head>
-<body>
+<body onload="mark_favourites()">
 <ul>
 <h1 class="ui header">Alone RPG:</h1>
 
@@ -17,7 +17,7 @@
                     <input type="text" placeholder="Filter" id="searchfield" name="searchfield" value="{{ current_filter }}">
                 </div>
                 <input type="submit" class="ui button" value="Filter">
-                <input type="button" class="ui button" onclick="myFunction()" value="Reset">
+                <input type="button" class="ui button" onclick="filter()" value="Reset">
             </form> 
         </div>
             {% if roll_data %}
@@ -34,9 +34,9 @@
 <div class="ui grid">
     {% for table in tables %}
         {% if rolled_table == table.index %}
-            <div class="four wide column"><a class="fluid primary small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}"> {{ table.index }}: ({{ table.system }}) {{ table.filename }}</a></div>
+            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid primary small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}">({{ table.system }}) {{ table.filename }}</a></div>
         {% else %}
-            <div class="four wide column"><a class="fluid small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}"> {{ table.index }}: ({{ table.system }}) {{ table.filename }}</a></div>
+            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}">({{ table.system }}) {{ table.filename }}</a></div>
         {% endif %}
     {% endfor %}
 </div>
@@ -45,10 +45,53 @@
 </ul>
 
 <script>
-function myFunction() {
+function filter() {
     document.getElementById("searchfield").value = "";
     document.getElementById("filter").submit();
+}
+
+function add_favourite(favourite){
+    var favourites = load_favourites();
+
+    favourites.add(favourite)
+    localStorage.favourites = Array.from(favourites).join(",")
+}
+
+function remove_favourite(favourite){
+    if (localStorage.getItem("favourites") == null){
+        return
+    }
+    var favourites = new Set(localStorage.favourites.split(","));
+    favourites.delete(favourite)
+    localStorage.favourites = Array.from(favourites).join(",")
+}
+
+function manage_favourites(favourite){
+    var checkBox = document.getElementById(favourite);
+
+    if (checkBox.checked == true){
+        add_favourite(favourite.split(" ")[1]);
+    } else {
+        remove_favourite(favourite.split(" ")[1]);
+    }
+}
+
+function load_favourites(){
+    if (!localStorage.favourites){
+        return new Set();
+    } else {
+        return new Set(localStorage.favourites.split(","));
+    }
+}
+
+function mark_favourites(){
+    var favourites = load_favourites();
+    for (let favourite of favourites){
+        var checkBox = document.getElementById("favourite " + favourite);
+        checkBox.checked = true;
+    }
 }
 </script>
 
 </body>
+</html>

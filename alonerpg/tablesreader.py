@@ -33,7 +33,7 @@ def rt(chosen_table):
     with open(table_path, encoding="utf-8", errors="ignore") as f:
         elements = [line.rstrip() for line in f]
 
-    return Response(message="Result for '" + table_name + "':", data=random.choice(elements))
+    return Response(message="Resultados para '" + table_name + "':", data=random.choice(elements))
 
 def get_tables(path=tables_path):
     directories = os.listdir(path)
@@ -150,24 +150,20 @@ def allowed_function(my_function):
 def dynamic_call(tables, call):
     this_module = sys.modules[__name__]
     module_functions = inspect.getmembers(this_module, inspect.isfunction)
-    function = call.split(" ")[0]
+    function = call.split(" ")[0].lower()
     parameters = call.split(" ")[1:]
     parameters.insert(0, tables)
 
-    if function in [x[0] for x in module_functions]:
-        try:
-            to_be_executed = getattr(this_module, function)
-
-            if not allowed_function(to_be_executed):
-                raise TypeError
-
-            return to_be_executed(*parameters)
-
-        except TypeError:
-            response = ayuda()
-            response.message = "Orden incorrecta. Por favor, consulta la ayuda:"
-            return response
-    else:
+    if function not in [x[0] for x in module_functions]:
         response = ayuda()
         response.message = "Orden no encontrada. Por favor, consulta la ayuda:"
         return response
+    
+    to_be_executed = getattr(this_module, function)
+
+    if not allowed_function(to_be_executed):
+        response = ayuda()
+        response.message = "Orden incorrecta. Por favor, consulta la ayuda:"
+        return response
+
+    return to_be_executed(*parameters)

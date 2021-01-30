@@ -6,6 +6,7 @@ class HomePageView(TemplateView):
     template_name = "home.html"
     tables = get_tables()
 
+
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         rolled_table = ""
