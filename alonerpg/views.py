@@ -1,11 +1,12 @@
+from .settings import TABLES_PATH
 from .tablesreader import *
 from django.views.generic.base import TemplateView
+
 
 class HomePageView(TemplateView):
 
     template_name = "home.html"
-    tables = get_tables()
-
+    tables = get_tables(TABLES_PATH)
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
