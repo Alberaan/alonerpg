@@ -16,8 +16,12 @@
                     <label>Search Table:</label>
                     <input type="text" placeholder="Filter" id="searchfield" name="searchfield" value="{{ current_filter }}">
                 </div>
-                <input type="submit" class="ui button" value="Filter">
-                <input type="button" class="ui button" onclick="filter()" value="Reset">
+                <input type="submit" class="ui button" onclick="filter_button_submit()" value="Filter">
+                <input type="button" class="ui button" onclick="reset_filter_submit()" value="Reset">
+                <div class="ui checkbox">
+                    <input type="checkbox" onclick="toggle_favourites()" name="favourites_checkbox" id="favourites_checkbox" value="">
+                    <label>Only favourites</label>
+                </div>
             </form> 
         </div>
             {% if roll_data %}
@@ -34,9 +38,9 @@
 <div class="ui grid">
     {% for table in tables %}
         {% if rolled_table == table.index %}
-            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid primary small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}">({{ table.system }}) {{ table.filename }}</a></div>
+            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid primary small ui button" onclick="roll_table_button('?rtn={{ table.index }}&searchfield={{ current_filter }}')">({{ table.system }}) {{ table.filename }}</a></div>
         {% else %}
-            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid small ui button" href="?rtn={{ table.index }}&searchfield={{ current_filter }}">({{ table.system }}) {{ table.filename }}</a></div>
+            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid small ui button" onclick="roll_table_button('?rtn={{ table.index }}&searchfield={{ current_filter }}')">({{ table.system }}) {{ table.filename }}</a></div>
         {% endif %}
     {% endfor %}
 </div>
@@ -45,11 +49,39 @@
 </ul>
 
 <script>
-function filter() {
+
+function roll_table_button(partial_link){
+    if (document.getElementById("favourites_checkbox").checked === true){
+        window.location = partial_link + "&favourites_checkbox=" + get_favourites();
+    } else {
+        window.location = partial_link;
+    }
+}
+function reset_filter_submit() {
     document.getElementById("searchfield").value = "";
+    document.getElementById("favourites_checkbox").value = get_favourites();
     document.getElementById("filter").submit();
 }
 
+function filter_button_submit(){
+    document.getElementById("favourites_checkbox").value = get_favourites()
+    document.getElementById("filter").submit();
+}
+
+function get_favourites(){
+    if (document.getElementById("favourites_checkbox").checked === true){
+        return Array.from(load_favourites());
+    }
+}
+
+function toggle_favourites(){
+    if (document.getElementById("favourites_checkbox").checked == true){
+        localStorage.only_favourites = true;
+    }
+    if (document.getElementById("favourites_checkbox").checked == false){
+        localStorage.only_favourites = false;
+    }
+}
 function add_favourite(favourite){
     var favourites = load_favourites();
 
@@ -83,6 +115,10 @@ function load_favourites(){
 
 function mark_favourites(){
     var favourites = load_favourites();
+
+    if (localStorage.only_favourites === "true"){
+        document.getElementById("favourites_checkbox").checked = true
+    }
 
     for (let favourite of favourites){
         var checkBox = document.getElementById("favourite " + favourite);

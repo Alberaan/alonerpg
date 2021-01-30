@@ -35,6 +35,16 @@ def rt(chosen_table):
 
     return Response(message="Resultados para '" + table_name + "':", data=random.choice(elements))
 
+def get_tables_by_list(tables, wanted_tables):
+    return_tables = []
+
+    for table in tables:
+        for wanted_table in wanted_tables:
+            if table.index == int(wanted_table):
+                return_tables.append(table)
+    
+    return return_tables
+
 def get_tables(path=tables_path):
     directories = os.listdir(path)
     cont = 0
