@@ -17,7 +17,7 @@ def fixTitle(title):
         if i.isalnum() or i == " ":
             titleToReturn += i
         else:
-            titleToReturn += "_"
+            titleToReturn += " "
 
     return titleToReturn
 
