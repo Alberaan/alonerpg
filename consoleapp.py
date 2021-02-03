@@ -1,5 +1,6 @@
 from alonerpg.tablesreader import *
 
+
 def print_data(data):
     if isinstance(data, str):
         print(data)
@@ -11,16 +12,19 @@ def print_data(data):
     
     print("")
 
+
 def main():
     print("Bienvenido al programa de tablas aleatorias")
     tables = get_tables()
     print(ayuda().data)
-    while(1):
+
+    while 1:
         print("Qué quieres hacer?:")
         command = input()
-        datos = dynamic_call(tables, command)
-        print(datos.message)
-        print_data(datos.data)
+        response = dynamic_call(tables, command)
+        print(response.message)
+        print_data(response.data)
+
 
 if __name__ == "__main__":
     main()

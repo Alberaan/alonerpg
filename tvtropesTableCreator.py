@@ -4,14 +4,16 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 
-def createFile(title, contents):
-    fichero = title + ".txt"
-    print("Escribiendo en " + fichero)
-    with open(fichero, "w", encoding="utf-8") as fileToWrite:
-        fileToWrite.write(contents)
+
+def create_file(title, contents):
+    myfile = title + ".txt"
+    print("Escribiendo en " + myfile)
+    with open(myfile, "w", encoding="utf-8") as file_to_write:
+        file_to_write.write(contents)
     print("Terminado")
 
-def fixTitle(title):
+
+def fix_title(title):
     titleToReturn = ""
     for i in title:
         if i.isalnum() or i == " ":
@@ -21,13 +23,14 @@ def fixTitle(title):
 
     return titleToReturn
 
-def getTropes(url):
+
+def get_tropes(url):
     tvtropes_link = url
     url ='http://dbtropes.org/info?uri=' + tvtropes_link + "&submit=Reverse+URI+Lookup"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
     unfilteredTitle = soup.select("head title")[0].get_text().replace(" - DBTropes","")
-    title = fixTitle(unfilteredTitle)
+    title = fix_title(unfilteredTitle)
     
     tropes = soup.select("tr.bg1 a")
 
@@ -42,17 +45,18 @@ def getTropes(url):
 
     return title, text[:-1] # I remove the last carriage return of the text
 
+
 def main():
     if (sys.argv[1] == "-i"):
-        while(1):
+        while 1:
             url = input("Introduce la url de tvtropes.org a partir de la cual quieras crear una tabla aleatoria:\n")
-            title, text = getTropes(url)
+            title, text = get_tropes(url)
             print("Tabla para: " + title + "\n")
             print(text)
     
     else:
-        title, text = getTropes(sys.argv[1])
-        createFile(title, text)
+        title, text = get_tropes(sys.argv[1])
+        create_file(title, text)
 
 if __name__ == main():
     main()
