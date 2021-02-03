@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 django = "*"
 dice = "*"
+requests = "*"
+bs4 = "*"
 
 [requires]
 python_version = "3.9"
