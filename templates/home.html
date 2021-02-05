@@ -1,132 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" />
-    <title>Alone RPG</title>
-</head>
-<body onload="mark_favourites()">
-<ul>
-<h1 class="ui header">Alone RPG:</h1>
-
-<div class="ui segment">
-    <div class="ui two column very relaxed grid">
-        <div class="column">
-            <form class="ui form" id="filter" action="/">
-                <div class="field">
-                    <label>Search Table:</label>
-                    <input type="text" placeholder="Filter" id="searchfield" name="searchfield" value="{{ current_filter }}">
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" />
+        <title>Alone RPG</title>
+    </head>
+    <body onload="mark_favourites()">
+        <div class="ui container">
+            <div class="ui segment">
+                <h1 class="ui header left aligned">Alone RPG:</h1>
+                <div class="ui two column very relaxed grid">
+                    <div class="column">
+                        <form class="ui form" id="filter" action="/">
+                            <div class="field">
+                                <label>Search Table:</label>
+                                <input type="text" placeholder="Filter" id="searchfield" name="searchfield" value="{{ current_filter }}">
+                            </div>
+                            <input type="submit" class="ui button" onclick="filter_button_submit()" value="Filter">
+                            <input type="button" class="ui button" onclick="reset_filter_submit()" value="Reset">
+                            <div class="ui checkbox">
+                                <input type="checkbox" onclick="toggle_favourites()" name="favourites_checkbox" id="favourites_checkbox" value="">
+                                <label>Only favourites</label>
+                            </div>
+                        </form>
+                    </div>
+                    {% if roll_data %}
+                    <div class="column">
+                        <h3>{{ roll_message }}</h3>
+                        <p>{{ roll_data }}</p>
+                        <button class="ui button" onClick="window.location.reload();">Roll Again</button>
+                        {% endif %}
+                    </div>
                 </div>
-                <input type="submit" class="ui button" onclick="filter_button_submit()" value="Filter">
-                <input type="button" class="ui button" onclick="reset_filter_submit()" value="Reset">
-                <div class="ui checkbox">
-                    <input type="checkbox" onclick="toggle_favourites()" name="favourites_checkbox" id="favourites_checkbox" value="">
-                    <label>Only favourites</label>
+            </div>
+            <div class="ui segment">
+                <h2>{{ filter_message }}</h2>
+                <div class="ui grid">
+                    {% for table in tables %}
+                    {% if rolled_table == table.index %}
+                    <div class="four wide column">
+                        <input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')">
+                        <a class="fluid primary small ui button" onclick="roll_table_button('?rtn={{ table.index }}&searchfield={{ current_filter }}')">({{ table.system }}) {{ table.filename }}</a>
+                    </div>
+                    {% else %}
+                    <div class="four wide column">
+                        <input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')">
+                        <a class="fluid small ui button" onclick="roll_table_button('?rtn={{ table.index }}&searchfield={{ current_filter }}')">({{ table.system }}) {{ table.filename }}</a>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
-            </form> 
+            </div>
         </div>
-            {% if roll_data %}
-        <div class="column">
-            <h3>{{ roll_message }}</h3>
-            <p>{{ roll_data }}</p>
-            <button class="ui button" onClick="window.location.reload();">Roll Again</button>
-            {% endif %}
-        </div>
-    </div>
-</div>
+        <script>
+            function roll_table_button(partial_link){
+                if (document.getElementById("favourites_checkbox").checked === true){
+                    window.location = partial_link + "&favourites_checkbox=" + get_favourites();
+                } else {
+                    window.location = partial_link;
+                }
+            }
+            function reset_filter_submit() {
+                document.getElementById("searchfield").value = "";
+                document.getElementById("favourites_checkbox").value = get_favourites();
+                document.getElementById("filter").submit();
+            }
 
-<p><h2>{{ filter_message }}</h2></p>
-<div class="ui grid">
-    {% for table in tables %}
-        {% if rolled_table == table.index %}
-            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid primary small ui button" onclick="roll_table_button('?rtn={{ table.index }}&searchfield={{ current_filter }}')">({{ table.system }}) {{ table.filename }}</a></div>
-        {% else %}
-            <div class="four wide column"><input type="checkbox" id="favourite {{ table.index }}" onclick="manage_favourites('favourite {{ table.index }}')"><a class="fluid small ui button" onclick="roll_table_button('?rtn={{ table.index }}&searchfield={{ current_filter }}')">({{ table.system }}) {{ table.filename }}</a></div>
-        {% endif %}
-    {% endfor %}
-</div>
+            function filter_button_submit(){
+                document.getElementById("favourites_checkbox").value = get_favourites()
+                document.getElementById("filter").submit();
+            }
 
-</div>
-</ul>
+            function get_favourites(){
+                if (document.getElementById("favourites_checkbox").checked === true){
+                    return Array.from(load_favourites());
+                }
+            }
 
-<script>
+            function toggle_favourites(){
+                if (document.getElementById("favourites_checkbox").checked == true){
+                    localStorage.only_favourites = true;
+                } else {
+                    localStorage.only_favourites = false;
+                }
+            }
+            function add_favourite(favourite){
+                var favourites = load_favourites();
 
-function roll_table_button(partial_link){
-    if (document.getElementById("favourites_checkbox").checked === true){
-        window.location = partial_link + "&favourites_checkbox=" + get_favourites();
-    } else {
-        window.location = partial_link;
-    }
-}
-function reset_filter_submit() {
-    document.getElementById("searchfield").value = "";
-    document.getElementById("favourites_checkbox").value = get_favourites();
-    document.getElementById("filter").submit();
-}
+                favourites.add(favourite);
+                localStorage.favourites = Array.from(favourites).join(",");
+            }
 
-function filter_button_submit(){
-    document.getElementById("favourites_checkbox").value = get_favourites()
-    document.getElementById("filter").submit();
-}
+            function remove_favourite(favourite){
+                var favourites = load_favourites();
 
-function get_favourites(){
-    if (document.getElementById("favourites_checkbox").checked === true){
-        return Array.from(load_favourites());
-    }
-}
+                favourites.delete(favourite);
+                localStorage.favourites = Array.from(favourites).join(",");
+            }
 
-function toggle_favourites(){
-    if (document.getElementById("favourites_checkbox").checked == true){
-        localStorage.only_favourites = true;
-    } else {
-        localStorage.only_favourites = false;
-    }
-}
-function add_favourite(favourite){
-    var favourites = load_favourites();
+            function manage_favourites(favourite){
+                var checkBox = document.getElementById(favourite);
 
-    favourites.add(favourite);
-    localStorage.favourites = Array.from(favourites).join(",");
-}
+                if (checkBox.checked == true){
+                    add_favourite(favourite.split(" ")[1]);
+                } else {
+                    remove_favourite(favourite.split(" ")[1]);
+                }
+            }
 
-function remove_favourite(favourite){
-    var favourites = load_favourites();
+            function load_favourites(){
+                if (!localStorage.favourites){
+                    return new Set();
+                }
+                return new Set(localStorage.favourites.split(","));
+            }
 
-    favourites.delete(favourite);
-    localStorage.favourites = Array.from(favourites).join(",");
-}
+            function mark_favourites(){
+                var favourites = load_favourites();
 
-function manage_favourites(favourite){
-    var checkBox = document.getElementById(favourite);
+                if (localStorage.only_favourites === "true"){
+                    document.getElementById("favourites_checkbox").checked = true
+                }
 
-    if (checkBox.checked == true){
-        add_favourite(favourite.split(" ")[1]);
-    } else {
-        remove_favourite(favourite.split(" ")[1]);
-    }
-}
-
-function load_favourites(){
-    if (!localStorage.favourites){
-        return new Set();
-    }
-    return new Set(localStorage.favourites.split(","));
-}
-
-function mark_favourites(){
-    var favourites = load_favourites();
-
-    if (localStorage.only_favourites === "true"){
-        document.getElementById("favourites_checkbox").checked = true
-    }
-
-    for (let favourite of favourites){
-        var checkBox = document.getElementById("favourite " + favourite);
-        if (checkBox){
-        checkBox.checked = true;
-        }
-    }
-}
-</script>
-
-</body>
+                for (let favourite of favourites){
+                    var checkBox = document.getElementById("favourite " + favourite);
+                    if (checkBox){
+                    checkBox.checked = true;
+                    }
+                }
+            }
+        </script>
+    </body>
 </html>
