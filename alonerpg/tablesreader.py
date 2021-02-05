@@ -3,7 +3,7 @@
 import random
 import re
 import os
-from dice import roll
+from dice import roll, DiceBaseException
 import sys
 import inspect
 
@@ -123,14 +123,22 @@ def rts(tables, search_string):
 
 
 # r XdY: lanza X dados de Y caras cada uno. Ejemplo: "r 2d6" lanzará 2 dados de 6 caras
-def r(tables, string):
-    results = roll(string)
+def r(*argv):
+    tables = argv[0]
+    string = " ".join(argv[1:])
+
+    results = ""
+    try:
+        results = roll(string)
+    except DiceBaseException:
+        return Response(message="Error en el formato del dado", data="")
+
     minimum = None
     maximum = None
     total = 0
 
     if isinstance(results, int):
-        return Response(message="", data=results)
+        return Response(message="", data=str(results))
 
     for dice in results:
         if minimum is None and maximum is None:
@@ -148,7 +156,7 @@ def r(tables, string):
 
 
 # ayuda: Imprime esta ayuda
-def ayuda():
+def ayuda(*argv):
     print("Comandos disponibles:\n")
     this_module = sys.modules[__name__]
     module_functions = inspect.getmembers(this_module, inspect.isfunction)
