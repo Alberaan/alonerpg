@@ -7,7 +7,7 @@ from dice import roll
 import sys
 import inspect
 
-tables_path = "tables/Tablas"
+tables_path = "tables"
 
 
 class Response:
