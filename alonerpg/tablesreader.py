@@ -7,12 +7,14 @@ from dice import roll
 import sys
 import inspect
 
-tables_path = "static/Tablas"
+tables_path = "tables/Tablas"
+
 
 class Response:
     def __init__(self, message="", data=None):
         self.message = message
         self.data = data
+
 
 class Table:
     def __init__(self, index, system, filename):
@@ -20,20 +22,21 @@ class Table:
         self.system = system
         self.filename = filename
 
-def rt(chosen_table):
 
+def rt(chosen_table):
     table_name = chosen_table.filename.replace(".txt", "")
     valid_string = re.search(r"^[a-zA-Z_\sñ0-9]*$", table_name)
 
     if not valid_string:
-        return Response(message="Invalid string", data="")
+        return Response(message="Input no válido", data="")
 
-    table_path= tables_path + "/" + chosen_table.system + "/" + table_name + ".txt"
+    table_path = f"{tables_path}/{chosen_table.system}/{table_name}.txt"
 
     with open(table_path, encoding="utf-8", errors="ignore") as f:
         elements = [line.rstrip() for line in f]
 
-    return Response(message="Resultados para '" + table_name + "':", data=random.choice(elements))
+    return Response(message=f"Resultados para '{table_name}': ", data=random.choice(elements))
+
 
 def get_tables_by_list(tables, wanted_tables):
     return_tables = []
@@ -52,7 +55,7 @@ def get_tables(path=tables_path):
     tables_to_return = []
 
     for directory in directories:
-        tables = os.listdir(path + "/" + directory)
+        tables = os.listdir(f"{path}/{directory}")
         for table in tables:
             if ".txt" in table:
                 tables_to_return.append(Table(cont, directory.split("/")[-1], table.replace(".txt", "")))
@@ -60,10 +63,13 @@ def get_tables(path=tables_path):
 
     return tables_to_return
 
-#lt [filtro]: lista todas las tablas. Si se especifica un filtro, solo se mostrarán aquellas tablas/sistemas cuyo nombre contenga el filtro especificado. Ejemplo: "lt" mostrará todas las tablas. "lt tarot" muestra todas las tablas o sistemas que contengan la palabra tarot
+
+# lt [filtro]: lista todas las tablas. Si se especifica un filtro, solo se mostrarán aquellas tablas/sistemas cuyo
+# nombre contenga el filtro especificado. Ejemplo: "lt" mostrará todas las tablas. "lt tarot" muestra todas las
+# tablas o sistemas que contengan la palabra tarot
 def lt(tables, *argv):
     tables_to_return = []
-    
+
     if len(argv) == 0:
         return Response(message="Tablas disponibles:", data=tables)
 
@@ -77,7 +83,9 @@ def lt(tables, *argv):
 
     return Response(message="Tablas encontradas:", data=tables_to_return)
 
-#rtn número: obtén un elemento aleatorio de la tabla con el número especificado. Este número puede consultarse cuando se listan o buscan tablas. Ejemplo "rtn 1" hará una tirada en la tabla 1
+
+# rtn número: obtén un elemento aleatorio de la tabla con el número especificado. Este número puede consultarse
+# cuando se listan o buscan tablas. Ejemplo "rtn 1" hará una tirada en la tabla 1
 def rtn(tables, table_number):
 
     valid_number = re.search(r"\d+", str(table_number))
@@ -89,10 +97,12 @@ def rtn(tables, table_number):
         return Response(message="No hay ninguna tabla con ese número", data=None)
 
     table = tables[int(table_number)]
-    
+
     return rt(table)
 
-#rts nombre: busca el nombre de la tabla o sistemas. Si solo hay una tabla con que contenga ese nombre, elegirá un elemento de ella. Ejemplo: "rts carta"
+
+# rts nombre: busca el nombre de la tabla o sistemas. Si solo hay una tabla con que contenga ese nombre, elegirá un
+# elemento de ella. Ejemplo: "rts carta"
 def rts(tables, search_string):
 
     matches = [s for s in tables if search_string.lower() in s.filename.lower()]
@@ -111,7 +121,8 @@ def rts(tables, search_string):
 
         return response
 
-#r XdY: lanza X dados de Y caras cada uno. Ejemplo: "r 2d6" lanzará 2 dados de 6 caras
+
+# r XdY: lanza X dados de Y caras cada uno. Ejemplo: "r 2d6" lanzará 2 dados de 6 caras
 def r(tables, string):
     results = roll(string)
     minimum = None
@@ -122,10 +133,10 @@ def r(tables, string):
         return Response(message="", data=results)
 
     for dice in results:
-        if minimum == None and maximum == None:
+        if minimum is None and maximum is None:
             minimum = dice
             maximum = dice
-        
+
         if dice < minimum:
             minimum = dice
         if dice > maximum:
@@ -135,27 +146,30 @@ def r(tables, string):
 
     return Response(message="", data=str(results) + "\n\nMinimum=" + str(minimum) + ", Maximum=" + str(maximum) + ", total=" + str(total))
 
-#ayuda: Imprime esta ayuda
+
+# ayuda: Imprime esta ayuda
 def ayuda():
     print("Comandos disponibles:\n")
     this_module = sys.modules[__name__]
-    module_functions= inspect.getmembers(this_module, inspect.isfunction)
+    module_functions = inspect.getmembers(this_module, inspect.isfunction)
 
     text = ""
     for funcion in module_functions:
         ayuda = inspect.getcomments(funcion[1])
-        if ayuda != None:
+        if ayuda is not None:
             text += "-" + ayuda.replace("#", "")
 
     return Response(message="", data=text)
 
+
 def allowed_function(my_function):
-    allowed = inspect.getcomments(my_function) 
-    
-    if allowed != None:
+    allowed = inspect.getcomments(my_function)
+
+    if allowed is not None:
         return True
 
     return False
+
 
 def dynamic_call(tables, call):
     this_module = sys.modules[__name__]
@@ -168,7 +182,7 @@ def dynamic_call(tables, call):
         response = ayuda()
         response.message = "Orden no encontrada. Por favor, consulta la ayuda:"
         return response
-    
+
     to_be_executed = getattr(this_module, function)
 
     if not allowed_function(to_be_executed):
