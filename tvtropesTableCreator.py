@@ -19,7 +19,7 @@ def fix_title(title):
         if i.isalnum() or i == " ":
             titleToReturn += i
         else:
-            titleToReturn += " "
+            titleToReturn += ""
 
     return titleToReturn
 
@@ -29,8 +29,8 @@ def get_tropes(url):
     url ='http://dbtropes.org/info?uri=' + tvtropes_link + "&submit=Reverse+URI+Lookup"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
-    unfilteredTitle = soup.select("head title")[0].get_text().replace(" - DBTropes","")
-    title = fix_title(unfilteredTitle)
+    unfiltered_title = soup.select("head title")[0].get_text().replace(" - DBTropes","")
+    title = fix_title(unfiltered_title)
     
     tropes = soup.select("tr.bg1 a")
 
@@ -38,10 +38,10 @@ def get_tropes(url):
 
     for trope in tropes:
         if "Main" in trope["href"]:
-            toAdd = trope.get_text().split("/")[0]
+            to_add = trope.get_text().split("/")[0]
 
-            if any(char.isalnum() for char in toAdd): 
-                text += toAdd + "\n"
+            if any(char.isalnum() for char in to_add): 
+                text += to_add + "\n"
 
     return title, text[:-1] # I remove the last carriage return of the text
 
