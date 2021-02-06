@@ -124,10 +124,8 @@ def rts(tables, search_string):
 
 # r XdY: lanza X dados de Y caras cada uno. Ejemplo: "r 2d6" lanzará 2 dados de 6 caras
 def r(*argv):
-    tables = argv[0]
     string = " ".join(argv[1:])
 
-    results = ""
     try:
         results = roll(string)
     except DiceBaseException:

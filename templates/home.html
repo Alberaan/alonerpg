@@ -8,7 +8,7 @@
         <div class="ui container" style="padding-top: 20px">
             <div class="ui segment">
                 <h1 class="ui header left aligned">Alone RPG:</h1>
-                <div class="ui two column very relaxed grid">
+                <div class="ui three column very relaxed grid">
                     <div class="column">
                         <form class="ui form" id="filter" action="/">
                             <div class="field">
@@ -22,6 +22,17 @@
                                 <label>Only favourites</label>
                             </div>
                         </form>
+                    </div>
+                    <div class="column ui form">
+                        <div class="field">
+                            <label>Roll:</label>
+                            <input type="text" placeholder="1d6" id="roll-dice" name="roll-dice" value="{{ roll_dice_input }}">
+                        </div>
+                        <span>
+                            <button class="ui button" onClick="rollDice();">Roll</button>
+                            {{ roll_dice_response.data }}
+                            {{ roll_dice_response.message }}
+                        </span>
                     </div>
                     {% if roll_data %}
                     <div class="column">
@@ -127,6 +138,11 @@
                     checkBox.checked = true;
                     }
                 }
+            }
+
+            function rollDice() {
+                let rollDiceValue = document.getElementById("roll-dice").value;
+                window.location.search += "&roll-dice=" + rollDiceValue;
             }
         </script>
     </body>
