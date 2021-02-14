@@ -144,7 +144,18 @@
 
             function rollDice() {
                 let rollDiceValue = document.getElementById("roll-dice").value;
-                window.location.search += "&roll-dice=" + rollDiceValue;
+                const urlParams = new URLSearchParams(window.location.search);
+
+                if (urlParams.has("roll-dice")) {
+                    urlParams.set("roll-dice", rollDiceValue);
+                } else {
+                    urlParams.append("roll-dice", rollDiceValue)
+                }
+                var parameters = "?";
+                urlParams.forEach(function(value, key) {
+                    parameters += key + "=" + value + "&";
+                });
+                window.location = window.location.origin + parameters.slice(0, -1);
             }
         </script>
     </body>
