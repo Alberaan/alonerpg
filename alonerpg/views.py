@@ -35,6 +35,12 @@ class HomePageView(TemplateView):
                 context["current_filter"] = request.GET["searchfield"]
                 context["rolled_table"] = rolled_table
 
+        if "roll-dice" in request.GET:
+            command = "r " + request.GET["roll-dice"]
+            roll_dice_response = dynamic_call(self.tables, command)
+            context["roll_dice_response"] = roll_dice_response
+            context["roll_dice_input"] = request.GET["roll-dice"]
+
         if len(request.GET) == 0:
             filtered_tables = dynamic_call(self.tables, "lt")
             if isinstance(filtered_tables.data, list):
