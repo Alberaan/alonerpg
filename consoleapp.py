@@ -14,8 +14,15 @@ def print_data(data):
 
 
 def main():
+     tables = get_tables()
+    if len(sys.argv) > 1:
+        command = ' '.join(sys.argv[1:])
+        datos = dynamic_call(tables, command)
+        print(datos.message)
+        print_data(datos.data)
+        return
+
     print("Bienvenido al programa de tablas aleatorias")
-    tables = get_tables()
     print(ayuda().data)
 
     while 1:
